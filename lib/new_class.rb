@@ -7,12 +7,16 @@ module NewClass
   end
 
   module ClassMethods
+    def when_defined(&block)
+      @when_defined = block
+    end
+
     def new_class(variables = {}, name = nil)
       Class.new(self).tap do |klass|
+        klass.extend NewClassMethods
         klass.instance_variable_set :@name, name || self.name
         klass.instance_variable_set :@variables, variables
-        klass.extend NewClassMethods
-        klass.defined if klass.respond_to?(:defined)
+        klass.instance_eval &@when_defined if @when_defined
       end
     end
 

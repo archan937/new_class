@@ -34,7 +34,7 @@ class ClassTest < Test::Unit::TestCase
           end
           class C < Greeter
             include NewClass
-            def self.defined
+            when_defined do
               (variable(:translations) || {}).each do |language, translation|
                 translate language, translation
               end
@@ -83,7 +83,7 @@ class ClassTest < Test::Unit::TestCase
             assert_equal "Hi, I am a D", C.new_class({}, "D").new.greet
           end
 
-          should "have @defined called" do
+          should "call when_defined" do
             klass = C.new_class({:translations => {:dutch => "Hallo, ik ben een {kind}"}})
             assert_equal "Hi, I am a C", klass.new.greet
             assert_equal "Hallo, ik ben een C", klass.new.greet(:dutch)
