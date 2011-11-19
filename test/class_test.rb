@@ -35,7 +35,7 @@ class ClassTest < Test::Unit::TestCase
           class C < Greeter
             include NewClass
             when_defined do
-              (variable(:translations) || {}).each do |language, translation|
+              (var(:translations) || {}).each do |language, translation|
                 translate language, translation
               end
             end
@@ -61,14 +61,18 @@ class ClassTest < Test::Unit::TestCase
             assert_equal({}, C.new_class({}, "D").instance_variable_get(:@variables))
           end
 
-          should "respond to variable" do
-            assert !C.respond_to?(:variable)
+          should "respond to var" do
+            assert !C.respond_to?(:var)
 
-            assert C.new_class({:foo => "bar"}).respond_to?(:variable)
-            assert C.new_class({:foo => "bar"}, "D").respond_to?(:variable)
+            assert C.new_class({:foo => "bar"}).respond_to?(:var)
+            assert C.new_class({:foo => "bar"}, "D").respond_to?(:var)
+            assert C.new_class.new({:foo => "bar"}).respond_to?(:var)
+            assert C.new_class.new({:foo => "bar"}, "D").respond_to?(:var)
 
-            assert_equal "bar", C.new_class({:foo => "bar"}).variable(:foo)
-            assert_equal "bar", C.new_class({:foo => "bar"}, "D").variable(:foo)
+            assert_equal "bar", C.new_class({:foo => "bar"}).var(:foo)
+            assert_equal "bar", C.new_class({:foo => "bar"}, "D").var(:foo)
+            assert_equal "bar", C.new_class({:foo => "bar"}, "D").new.var(:foo)
+            assert_equal "bar", C.new_class({:foo => "bar"}, "D").new.var(:foo)
           end
 
           should "be able to create instances" do

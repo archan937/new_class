@@ -14,6 +14,7 @@ module NewClass
     def new_class(variables = {}, name = nil)
       Class.new(self).tap do |klass|
         klass.extend NewClassMethods
+        klass.send :include, NewClassInstanceMethods
         klass.instance_variable_set :@name, name || self.name
         klass.instance_variable_set :@variables, variables
         klass.instance_eval &@when_defined if @when_defined
@@ -26,8 +27,14 @@ module NewClass
       end
       alias :to_s :name
 
-      def variable(key)
+      def var(key)
         (@variables || {})[key]
+      end
+    end
+
+    module NewClassInstanceMethods
+      def var(key)
+        self.class.var(key)
       end
     end
   end
