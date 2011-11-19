@@ -1,0 +1,5 @@
+= NewClass CHANGELOG
+
+== Version 0.0.1 (November xxx, 2011)
+
+* Initial release
