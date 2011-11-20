@@ -28,7 +28,7 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor 
 
 h2. Last remarks
 
-Please check out "lorem_ipsum.rb":https://github.com/archan937/new_class/blob/master/test/new_class_test.rb for most of the tests available. You can run the unit tests with @rake@ within the terminal.
+Please check out "test/class_test.rb":https://github.com/archan937/new_class/blob/master/test/class_test.rb for most of the tests available. You can run the unit tests with @rake@ within the terminal.
 
 Also, the NewClass repo is provided with @script/console@ which you can run for testing purposes.
 
