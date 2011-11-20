@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gemspec unless ENV["GEMDEV"] == "1"
+gemspec
 
 group :gem_default do
   gem "new_class", :path => "."

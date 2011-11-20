@@ -1,4 +1,4 @@
-require "new_class/version"
+require "new_class/version" unless defined?(NewClass::VERSION)
 
 module NewClass
 
