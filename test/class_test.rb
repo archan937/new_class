@@ -66,8 +66,8 @@ class ClassTest < Test::Unit::TestCase
 
             assert C.new_class({:foo => "bar"}).respond_to?(:var)
             assert C.new_class({:foo => "bar"}, "D").respond_to?(:var)
-            assert C.new_class.new({:foo => "bar"}).respond_to?(:var)
-            assert C.new_class.new({:foo => "bar"}, "D").respond_to?(:var)
+            assert C.new_class({:foo => "bar"}).new.respond_to?(:var)
+            assert C.new_class({:foo => "bar"}, "D").new.respond_to?(:var)
 
             assert_equal "bar", C.new_class({:foo => "bar"}).var(:foo)
             assert_equal "bar", C.new_class({:foo => "bar"}, "D").var(:foo)
