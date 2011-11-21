@@ -13,4 +13,6 @@ end
 group :gem_test do
   gem "shoulda"
   gem "mocha"
+  gem "rmagick"
+  gem "carrierwave"
 end
