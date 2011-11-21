@@ -4,7 +4,7 @@
 .config
 .rvmrc
 .yardoc
-.DS_store
+.DS_Store
 Gemfile.lock
 InstalledFiles
 _yardoc
