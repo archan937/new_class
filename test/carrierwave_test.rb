@@ -1,5 +1,16 @@
 require File.expand_path("../test_helper", __FILE__)
 
+require "carrierwave/orm/activerecord"
+
+CarrierWave.root = File.expand_path("../carrierwave_test", __FILE__)
+ActiveRecord::Base.logger = nil
+ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
+ActiveRecord::Schema.define do
+  create_table :users do |table|
+    table.column :avatar, :string
+  end
+end
+
 class CarrierWaveTest < Test::Unit::TestCase
 
   context "A variable dependent CarrierWave Uploader class" do
@@ -24,7 +35,11 @@ class CarrierWaveTest < Test::Unit::TestCase
         end
 
         def store_dir
-          "uploads" # "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
+          "uploads/#{model.class.name.match(/[^:]+$/).to_s.underscore}/#{mounted_as}/#{model.id}"
+        end
+
+        def cache_dir
+          "tmp"
         end
 
         def extension_white_list
@@ -32,38 +47,58 @@ class CarrierWaveTest < Test::Unit::TestCase
         end
       end
 
-      @MagickUploader = Uploader.new_class :config => {
-        :processor => CarrierWave::RMagick,
-        :storage => :file,
-        :versions => [[800, 800], {:thumb => [200, 200]}, {:icon => [100, 100]}],
-        :extension_white_list => %w(jpg jpeg gif png)
-      }
-      @magick_uploader = @MagickUploader.new
-
-      # @magick_uploader.store! File.open(File.expand_path("../carrierwave_test/archan937.png", __FILE__))
+      @Uploader = Uploader.new_class({
+        :config => {
+          :processor => CarrierWave::RMagick,
+          :storage => :file,
+          :versions => [[800, 800], {:thumb => [200, 200]}, {:icon => [100, 100]}],
+          :extension_white_list => %w(jpg jpeg gif png)
+        }
+      })
     end
 
     should "have respond to image processing methods" do
-      assert @MagickUploader.respond_to?(:resize_to_fill)
-      assert @MagickUploader.respond_to?(:resize_to_fit)
+      assert @Uploader.respond_to?(:resize_to_fill)
+      assert @Uploader.respond_to?(:resize_to_fit)
     end
 
     should "have the expected storage" do
-      assert_equal CarrierWave::Storage::File, @MagickUploader.storage
+      assert_equal CarrierWave::Storage::File, @Uploader.storage
     end
 
-    # should "have the expected urls" do
-    #   assert_equal [], @magick_uploader.url
-    #   assert_equal [], @magick_uploader.thumb.url
-    #   assert_equal [], @magick_uploader.icon.url
-    # end
-    #
-    # should "have the expected versions" do
-    #   assert_equal [], @magick_uploader.versions
-    # end
+    context "used within an ActiveRecord::Base class" do
+      setup do
+        class User < ActiveRecord::Base; end
+        User.mount_uploader :avatar, @Uploader
+        @user = User.new
+        @user.avatar = File.open(File.expand_path("../carrierwave_test/archan937.png", __FILE__))
+      end
 
-    should "have the expected extension white list" do
-      assert_equal %w(jpg jpeg gif png), @magick_uploader.extension_white_list
+      teardown do
+        FileUtils.rm_rf File.expand_path("../carrierwave_test/uploads", __FILE__)
+        FileUtils.rm_rf File.expand_path("../carrierwave_test/tmp", __FILE__)
+      end
+
+      should "have the expected cache urls" do
+        assert @user.avatar.url.match(/\/tmp\/[^\/]+\/archan937.png/)
+        assert @user.avatar.thumb.url.match(/\/tmp\/[^\/]+\/thumb_archan937.png/)
+        assert @user.avatar.icon.url.match(/\/tmp\/[^\/]+\/icon_archan937.png/)
+      end
+
+      should "have the expected store urls" do
+        @user.save
+        assert @user.avatar.url.match(/\/uploads\/user\/avatar\/1\/archan937.png/)
+        assert @user.avatar.thumb.url.match(/\/uploads\/user\/avatar\/1\/thumb_archan937.png/)
+        assert @user.avatar.icon.url.match(/\/uploads\/user\/avatar\/1\/icon_archan937.png/)
+      end
+
+      should "have the expected versions" do
+        assert_equal([:thumb, :icon], @Uploader.versions.keys)
+      end
+
+      should "have the expected extension white list" do
+        assert_equal %w(jpg jpeg gif png), @user.avatar.extension_white_list
+      end
     end
   end
 

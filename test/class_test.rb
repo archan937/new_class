@@ -26,15 +26,15 @@ class ClassTest < Test::Unit::TestCase
         @C = B.new_class({}, "C")
       end
 
-      should "have @name and @variables defined" do
-        assert !A.instance_variable_defined?(:@name)
-        assert !A.instance_variable_defined?(:@variables)
+      should "respond to _name and _variables" do
+        assert !A.respond_to?(:_name)
+        assert !A.respond_to?(:_variables)
 
-        assert_equal(B.name, @B.instance_variable_get(:@name))
-        assert_equal({}, @B.instance_variable_get(:@variables))
+        assert_equal(B.name, @B._name)
+        assert_equal({}, @B._variables)
 
-        assert_equal("C", @C.instance_variable_get(:@name))
-        assert_equal({}, @C.instance_variable_get(:@variables))
+        assert_equal("C", @C._name)
+        assert_equal({}, @C._variables)
       end
 
       should "override method_missing and respond_to?" do

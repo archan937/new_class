@@ -14,6 +14,8 @@ lib/bundler/man
 pkg
 rdoc
 spec/reports
+test/carrierwave_test/uploads
+test/carrierwave_test/tmp
 test/tmp
 test/version_tmp
 tmp

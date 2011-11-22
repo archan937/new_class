@@ -13,6 +13,8 @@ end
 group :gem_test do
   gem "shoulda"
   gem "mocha"
+  gem "activerecord", :require => "active_record"
+  gem "sqlite3"
   gem "rmagick"
   gem "carrierwave"
 end

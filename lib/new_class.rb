@@ -1,3 +1,5 @@
+require "active_support/core_ext/class/attribute"
+require "active_support/concern"
 require "new_class/version" unless defined?(NewClass::VERSION)
 
 module NewClass
@@ -9,43 +11,38 @@ module NewClass
   module ClassMethods
     def new_class(variables = {}, name = nil)
       Class.new(self).tap do |klass|
-        klass.extend NewClassMethods
+        klass.send :include, Concerns, MethodMissing
         klass.extend MethodMissing
-        klass.send :include, NewClassInstanceMethods
-        klass.send :include, MethodMissing
-        klass.instance_variable_set :@name, name || self.name
-        klass.instance_variable_set :@variables, variables.inject({}){|h, (k, v)| h.merge k.to_sym => v}
+        klass._name = name || self.name
+        klass._variables = variables.inject({}){|h, (k, v)| h.merge k.to_sym => v}
         klass.defined if klass.respond_to?(:defined)
       end
     end
 
-    module NewClassMethods
-      def name
-        @name || super
+    module Concerns
+      extend ActiveSupport::Concern
+      included do
+        class_attribute :_name, :_variables
       end
-      alias :to_s :name
-
-      attr_reader :variables
-    end
-
-    module NewClassInstanceMethods
-      def variables
-        self.class.variables
+      module ClassMethods
+        def name
+          _name || super
+        end
+        alias :to_s :name
+      end
+      module InstanceMethods
+        def _variables
+          self.class._variables
+        end
       end
     end
 
     module MethodMissing
       def method_missing(method, *args)
-        if variables.include?(key = method.to_sym)
-          value = variables[key]
-          define_method(key){ value }.call
-        else
-          super
-        end
+        _variables.include?(key = method.to_sym) ? define_method(key){ _variables[key] }.call : super
       end
-
       def respond_to?(symbol, include_private = false)
-        variables.include?(symbol.to_sym) || super
+        _variables.include?(symbol.to_sym) || super
       end
     end
   end

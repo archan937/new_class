@@ -14,4 +14,6 @@ Gem::Specification.new do |gem|
   gem.name          = "new_class"
   gem.require_paths = ["lib"]
   gem.version       = NewClass::VERSION
+
+  gem.add_dependency "activesupport"
 end
