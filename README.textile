@@ -4,7 +4,112 @@ Define variable dependent classes without using class_eval
 
 h2. Introduction
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+I think we as Ruby programmers are blessed with the power of meta programming as we can program classes and instances dynamically within the Ruby language. These are just a couple of methods we can use as tools:
+
+* eval / module_eval / class_eval / instance_eval
+* class_variables / instance_variables
+* class_variable_get / class_variable_set
+* instance_variable_get / instance_variable_set
+* define_method / undef_method / remove_method
+* send
+* method_missing
+* Class.new
+
+Some of the methods (such as @eval@, @class_eval@ and @instance_eval@) are often seen as evil and also, they can be very dangerous.
+
+h3. Dynamic CarrierWave uploader classes
+
+In my case, I had to define "CarrierWave":https://github.com/jnicklas/carrierwave uploader classes dynamically as they are dependent of certain variables. Choosing not to use @class_eval@ for this task, I have created the @NewClass@ gem to accomplish this.
+
+Instead of defining a CarrierWave uploader class with something like this:
+
+<pre>
+  config = {
+    :processor => CarrierWave::RMagick,
+    :storage => :file,
+    :versions => [[800, 800], {:thumb => [200, 200]}, {:icon => [100, 100]}],
+    :extension_white_list => %w(jpg jpeg gif png)
+  }
+
+  avatar_uploader = Class.new(CarrierWave::Uploader::Base).tap do |klass|
+    klass.instance_eval <<-RUBY
+      include #{config[:processor].to_s}
+      storage :#{config[:storage]}
+
+      def store_dir
+        "uploads/\#{model.class.to_s.underscore}/\#{mounted_as}/\#{model.id}"
+      end
+
+      def cache_dir
+        "tmp"
+      end
+
+      def extension_white_list
+        %w(#{config[:extension_white_list].join " "})
+      end
+    RUBY
+
+    config[:versions].each do |v|
+      case v.class.name
+      when "Array"
+        klass.process :resize_to_fit => v
+      when "Hash"
+        klass.instance_eval <<-RUBY
+          version :#{v.keys.first} do
+            process :resize_to_fit => [#{v.values.first[0]}, #{v.values.first[1]}]
+          end
+        RUBY
+      end
+    end
+  end
+</pre>
+
+I am able to define the class like this:
+
+<pre>
+  config = {
+    :processor => CarrierWave::RMagick,
+    :storage => :file,
+    :versions => [[800, 800], {:thumb => [200, 200]}, {:icon => [100, 100]}],
+    :extension_white_list => %w(jpg jpeg gif png)
+  }
+
+  class Uploader < CarrierWave::Uploader::Base
+    include NewClass
+
+    def self.defined
+      include config[:processor]
+      storage config[:storage]
+
+      config[:versions].each do |v|
+        case v.class.name
+        when "Array"
+          process :resize_to_fit => v
+        when "Hash"
+          version v.keys.first do
+            process :resize_to_fit => v.values.first
+          end
+        end
+      end
+    end
+
+    def store_dir
+      "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
+    end
+
+    def cache_dir
+      "tmp"
+    end
+
+    def extension_white_list
+      config[:extension_white_list]
+    end
+  end
+
+  avatar_uploader = Uploader.new_class(:config => config)
+</pre>
+
+A much cleaner solution right? Try out @NewClass@ right now and spread the word if you like it! ^^
 
 h2. Installation
 
@@ -22,13 +127,9 @@ Run the following in your console to install with Bundler:
   bundle install
 </pre>
 
-h2. Example
-
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
 h2. Last remarks
 
-Please check out "test/class_test.rb":https://github.com/archan937/new_class/blob/master/test/class_test.rb for most of the tests available. You can run the unit tests with @rake@ within the terminal.
+Please check out "test/carrierwave_test.rb":https://github.com/archan937/new_class/blob/master/test/carrierwave_test.rb and "test/class_test.rb":https://github.com/archan937/new_class/blob/master/test/class_test.rb for most of the tests available. You can run the unit tests with @rake@ within the terminal.
 
 Also, the NewClass repo is provided with @script/console@ which you can run for testing purposes.
 
