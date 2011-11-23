@@ -39,7 +39,7 @@ module NewClass
 
     module MethodMissing
       def method_missing(method, *args)
-        _variables.include?(key = method.to_sym) ? define_method(key){ _variables[key] }.call : super
+        _variables.include?(key = method.to_sym) ? _variables[key] : super
       end
       def respond_to?(symbol, include_private = false)
         _variables.include?(symbol.to_sym) || super
