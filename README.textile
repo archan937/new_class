@@ -1,6 +1,6 @@
 h1. NewClass
 
-Define variable dependent classes without using class_eval
+Define variable dependent classes without evalling
 
 h2. Introduction
 
@@ -19,7 +19,7 @@ Some of the methods (such as @eval@, @class_eval@ and @instance_eval@) are often
 
 h3. Dynamic CarrierWave uploader classes
 
-In my case, I had to define "CarrierWave":https://github.com/jnicklas/carrierwave uploader classes dynamically as they are dependent of certain variables. Choosing not to use @class_eval@ for this task, I have created the @NewClass@ gem to accomplish this.
+In my case, I had to define "CarrierWave":https://github.com/jnicklas/carrierwave uploader classes dynamically as they are dependent of certain variables. Choosing not to use @instance_eval@ for this task, I have created the @NewClass@ gem to accomplish this.
 
 Instead of defining a CarrierWave uploader class with something like this:
 
