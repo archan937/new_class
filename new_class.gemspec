@@ -4,8 +4,8 @@ require File.expand_path("../lib/new_class/version", __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Paul Engel"]
   gem.email         = ["paul.engel@holder.nl"]
-  gem.description   = %q{Define variable dependent classes without using class_eval}
-  gem.summary       = %q{Define variable dependent classes without using class_eval}
+  gem.description   = %q{Define variable dependent classes without evalling}
+  gem.summary       = %q{Define variable dependent classes without evalling}
   gem.homepage      = "https://github.com/archan937/new_class"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
