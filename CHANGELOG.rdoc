@@ -1,5 +1,9 @@
 = NewClass CHANGELOG
 
+== Version 0.1.2 (January 25, 2012)
+
+* Not defining instance methods within InstanceMethods module as ActiveSupport does not include it automatically anymore since v3.2.0
+
 == Version 0.1.1 (November 23, 2011)
 
 * Fixed bug: not defining method within method_missing anymore
