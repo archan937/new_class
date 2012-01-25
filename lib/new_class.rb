@@ -30,10 +30,9 @@ module NewClass
         end
         alias :to_s :name
       end
-      module InstanceMethods
-        def _variables
-          self.class._variables
-        end
+
+      def _variables
+        self.class._variables
       end
     end
 
