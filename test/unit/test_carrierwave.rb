@@ -94,7 +94,7 @@ module Unit
         end
 
         it "should have the expected versions" do
-          assert_equal([:thumb, :icon], @Uploader.versions.keys)
+          assert_equal(%w(icon thumb), @Uploader.versions.keys.collect(&:to_s).sort)
         end
 
         it "should have the expected extension white list" do
