@@ -129,11 +129,9 @@ Run the following in your console to install with Bundler:
 
 h2. Last remarks
 
-Please check out "test/carrierwave_test.rb":https://github.com/archan937/new_class/blob/master/test/carrierwave_test.rb and "test/class_test.rb":https://github.com/archan937/new_class/blob/master/test/class_test.rb for most of the tests available. You can run the unit tests with @rake@ within the terminal.
+Please check out "test/unit/test_carrierwave.rb":https://github.com/archan937/new_class/blob/master/test/unit/test_carrierwave.rb and "test/unit/test_class.rb":https://github.com/archan937/new_class/blob/master/test/unit/test_class.rb for most of the tests available. You can run the unit tests with @rake@ within the terminal.
 
 Also, the NewClass repo is provided with @script/console@ which you can use for testing purposes.
-
-Note: *NewClass is successfully tested using Ruby 1.8.7 and Ruby 1.9.2*
 
 h2. Contact me
 
