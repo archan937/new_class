@@ -11,8 +11,9 @@ group :gem_development do
 end
 
 group :gem_test do
-  gem "shoulda"
+  gem "minitest"
   gem "mocha"
+  gem "pry"
   gem "activerecord", :require => "active_record"
   gem "sqlite3"
   gem "rmagick"
