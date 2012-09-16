@@ -17,4 +17,5 @@ group :gem_test do
   gem "sqlite3"
   gem "rmagick"
   gem "carrierwave"
+  gem "rake"
 end
